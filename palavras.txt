@@ -1,6 +1,10 @@
 banana
 morango
-abacaxi
-melancia
-arroz
-batata
+papagaio
+macaco
+cavalo
+pikachu
+panela
+geladeira
+cadeira
+cerveja
