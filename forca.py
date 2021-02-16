@@ -1,72 +1,109 @@
 #import random
 import palavras_secretas as palavras
 
-# adicionar validaçâo de letra repetida
-# adicionar letras erradas na tela
+linhas_utilizadas = [100000]
+
 # tratar espaço de palavra composta
-# não repetir a palavra alterior
-# mostrar palavra no final de cada jogo
-#
+# caso tenha testado todas as palavras, perguntar se deseja continuar com as palavras repetidas
 
 def jogar():
-    print("*********************************")
-    print("*  Bem vindo no jogo da Forca!  *")
-    print("*********************************")
+    cabecalho()
 
     continuar = True
     while(continuar):
-
-        linha_aleatoria = palavras.linha_aleatoria(palavras.quantidade_linhas())
-        palavra_secreta = palavras.ler("palavras.txt", linha_aleatoria).strip("\n").upper()
-        dica = palavras.ler("dica.txt", linha_aleatoria).strip("\n").upper()
-
-        print("Dica:", dica)
+        palavra_secreta = palavra_aleatoria()
+        letras_acertada = ["_" for letra in palavra_secreta]
+        print(letras_acertada)
 
         enforcou = False
         acertou = False
         erros = 0
-        #     letras_acertada.append("_")
-        # for letra in palavra_secreta:
-        letras_acertada = ["_" for letra in palavra_secreta]
-
-
-        print(letras_acertada)
+        letras_chute = []
 
         while(not enforcou and not acertou):
-
             chute = input("Qual letra ? ").strip().upper()
 
-            if (chute in palavra_secreta):
-                index = 0
-                for letra in palavra_secreta:
-                    if(chute == letra):
-                        letras_acertada[index] = letra.upper()
-                        # print("Encontrei a letra {} na posição {}".format(chute, index))
-                    index += 1
-                boneco_forca(erros)
+            if(letra_repetida(chute,letras_chute)):
+                print("Letra ionformada já foi utilizada anteriormente")
             else:
-                erros +=1
+                if (chute in palavra_secreta):
+                    confirma_letra(palavra_secreta,chute,letras_acertada)
+                    boneco_forca(erros)
+                else:
+                    erros +=1
+                    boneco_forca(erros)
 
-                boneco_forca(erros)
+                letras_chute.append(chute)
+                print("Letras utilizadas:",letras_chute)
+                print("Palavra:",letras_acertada)
 
-            enforcou = erros == 6
-            acertou = "_" not in letras_acertada
-            print(letras_acertada)
+                enforcou = erros == 6
+                acertou = "_" not in letras_acertada
 
-        if(acertou):
-            print("Você ganhou!")
+        resultado(acertou,palavra_secreta)
+        continuar = jogar_novamente()
+
+def letra_repetida(chute, letras_chute):
+    return chute in letras_chute
+
+def linha_aleatoria():
+    repetida = True
+    qtd_repetidas = 0
+    while(repetida):
+        linha_obtida = palavras.linha_aleatoria(palavras.quantidade_linhas())
+        if linha_obtida in linhas_utilizadas:
+            repetida = True
         else:
-            print("Você perdeu!")
+            repetida = False
+            linhas_utilizadas.append(linha_obtida)
 
-        print("Fim de Jogo!")
+    return linha_obtida
 
-        continuar_jogando = input("Deseja continuar jogando? (Y/N)").strip().upper()
-        if(continuar_jogando == "Y"):
-            continuar = True
-        elif (continuar_jogando == "N"):
-            continuar = False
-        else:
-            continuar = False
+
+def palavra_aleatoria():
+    linha = linha_aleatoria()
+    dica_palavra_secreta(linha)
+    return palavras.ler("palavras.txt", linha).strip("\n").upper()
+    # return palavra_secreta
+
+def dica_palavra_secreta(linha):
+    dica = palavras.ler("dica.txt", linha).strip("\n").upper()
+    print("Dica:", dica)
+
+
+def jogar_novamente():
+    continuar_jogando = input("Deseja continuar jogando? (Y/N)").strip().upper()
+    if (continuar_jogando == "Y"):
+        continuar = True
+    elif (continuar_jogando == "N"):
+        continuar = False
+    else:
+        continuar = False
+
+    return continuar
+
+
+def cabecalho():
+    print("*********************************")
+    print("*  Bem vindo no jogo da Forca!  *")
+    print("*********************************")
+
+
+def confirma_letra(palavra_secreta,chute,letras_acertada):
+    index = 0
+    for letra in palavra_secreta:
+        if (chute == letra):
+            letras_acertada[index] = letra.upper()
+        index += 1
+
+
+def resultado(acertou, palavra):
+    if (acertou):
+        print("Você ganhou!")
+    else:
+        print("Você perdeu! A palavra secreta é", palavra)
+
+    print("Fim de Jogo!")
 
 
 def boneco_forca(erros):
