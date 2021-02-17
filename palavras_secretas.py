@@ -1,8 +1,6 @@
 import os.path
 import random
 
-
-
 def adicionar():
     arquivo_palavra = open("palavras.txt", "a")
     arquivo_dica = open("dica.txt", "a")

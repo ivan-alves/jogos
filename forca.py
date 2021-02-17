@@ -1,19 +1,16 @@
 #import random
 import palavras_secretas as palavras
 
-linhas_utilizadas = [100000]
-
-# tratar espaço de palavra composta
-# caso tenha testado todas as palavras, perguntar se deseja continuar com as palavras repetidas
+linhas_utilizadas = []
 
 def jogar():
     cabecalho()
-
     continuar = True
+
     while(continuar):
         palavra_secreta = palavra_aleatoria()
-        letras_acertada = ["_" for letra in palavra_secreta]
-        print(letras_acertada)
+        letras_acertada = []
+        esconde_palavra_secreta(palavra_secreta, letras_acertada)
 
         enforcou = False
         acertou = False
@@ -27,21 +24,31 @@ def jogar():
                 print("Letra ionformada já foi utilizada anteriormente")
             else:
                 if (chute in palavra_secreta):
-                    confirma_letra(palavra_secreta,chute,letras_acertada)
+                    confirma_letra(palavra_secreta, chute, letras_acertada)
                     boneco_forca(erros)
                 else:
                     erros +=1
                     boneco_forca(erros)
 
                 letras_chute.append(chute)
-                print("Letras utilizadas:",letras_chute)
+                print("Letras utilizadas:", letras_chute)
                 print("Palavra:",letras_acertada)
 
                 enforcou = erros == 6
                 acertou = "_" not in letras_acertada
 
-        resultado(acertou,palavra_secreta)
+        resultado(acertou, palavra_secreta)
         continuar = jogar_novamente()
+
+def esconde_palavra_secreta(palavra_secreta, letras_acertada):
+    # letras_acertada = ["_" for letra in palavra_secreta]
+    for letra in palavra_secreta:
+        if (letra == " "):
+            letras_acertada.append("#")
+        else:
+            letras_acertada.append("_")
+
+    print(letras_acertada)
 
 def letra_repetida(chute, letras_chute):
     return chute in letras_chute
@@ -49,16 +56,23 @@ def letra_repetida(chute, letras_chute):
 def linha_aleatoria():
     repetida = True
     qtd_repetidas = 0
+    qtd_linhas = palavras.quantidade_linhas()
+
     while(repetida):
-        linha_obtida = palavras.linha_aleatoria(palavras.quantidade_linhas())
-        if linha_obtida in linhas_utilizadas:
+        linha_obtida = palavras.linha_aleatoria(qtd_linhas)
+        if (qtd_linhas == qtd_repetidas):
+            continuar = input("Todas as palavras já foram jogadas. Deseja continuar jogando? (Y/N)").strip().upper()
+            if (continuar == "Y"):
+                linhas_utilizadas.clear()
+                qtd_repetidas = 0
+        elif linha_obtida in linhas_utilizadas:
             repetida = True
+            qtd_repetidas += 1
         else:
             repetida = False
             linhas_utilizadas.append(linha_obtida)
 
     return linha_obtida
-
 
 def palavra_aleatoria():
     linha = linha_aleatoria()
