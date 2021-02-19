@@ -1,35 +1,28 @@
 import os.path
 import random
 
-def adicionar():
-    arquivo_palavra = open("palavras.txt", "a")
-    arquivo_dica = open("dica.txt", "a")
 
+def adicionar():
     palavra = input("Insira uma nova palavra: ")
     dica = input("Insira uma nova dica: ")
 
-    arquivo_palavra.write(palavra + "\n")
-    arquivo_dica.write(dica + "\n")
+    with open("palavras.txt", "a") as arquivo_palavra:
+        arquivo_palavra.write(palavra + ";" + dica + "\n")
 
-    arquivo_palavra.close()
-    arquivo_dica.close()
 
-def ler(arquivo,linha_aleatoria):
-    arquivo = open(arquivo, "r")
-
-    palavra = palavra_aleatoria(arquivo, linha_aleatoria)
-    arquivo.close()
+def ler(linha_aleatoria):
+    with open("palavras.txt", "r") as arquivo:
+        palavra = palavra_aleatoria(arquivo, linha_aleatoria)
     return str(palavra)
 
+
 def quantidade_linhas():
-    arquivo = open("palavras.txt", "r")
     qtd = 0
-    for linhas in arquivo:
-        qtd +=1
-
-    arquivo.close()
-
+    with open("palavras.txt", "r") as arquivo:
+        for linhas in arquivo:
+            qtd +=1
     return qtd
+
 
 def palavra_aleatoria(arquivo, quantidade_linhas):
     index = 0
@@ -42,6 +35,7 @@ def palavra_aleatoria(arquivo, quantidade_linhas):
 
     return palavra_secreta
 
+
 def linha_aleatoria(qtd):
     return random.randrange(0, qtd)
 
@@ -53,8 +47,9 @@ def criar_arquivo():
         adicionar()
     else:
         arquivo = open("palavras.txt", "w")
-        arquivo.write(adicionar())
         arquivo.close()
+        adicionar()
+
 
 def palavras_secretas():
     continuar = True

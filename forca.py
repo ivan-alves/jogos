@@ -1,15 +1,15 @@
-#import random
-import palavras_secretas as palavras
+import palavras_secretas as ps
 
 linhas_utilizadas = []
+
 
 def jogar():
     cabecalho()
     continuar = True
 
     while(continuar):
-        palavra_secreta = palavra_aleatoria()
         letras_acertada = []
+        palavra_secreta = obtem_palavra()
         esconde_palavra_secreta(palavra_secreta, letras_acertada)
 
         enforcou = False
@@ -40,6 +40,25 @@ def jogar():
         resultado(acertou, palavra_secreta)
         continuar = jogar_novamente()
 
+
+def cabecalho():
+    print("*********************************")
+    print("*  Bem vindo no jogo da Forca!  *")
+    print("*********************************")
+
+
+def obtem_palavra():
+    linha = linha_aleatoria()
+    palavra_arquivo = ps.ler(linha).strip("\n").upper()
+    posicao_ponto_virgula = palavra_arquivo.find(";")
+
+    palavra = palavra_arquivo[:posicao_ponto_virgula]
+    dica = palavra_arquivo[posicao_ponto_virgula:].strip(";")
+
+    print("Dica:", dica)
+    return palavra
+
+
 def esconde_palavra_secreta(palavra_secreta, letras_acertada):
     # letras_acertada = ["_" for letra in palavra_secreta]
     for letra in palavra_secreta:
@@ -50,21 +69,34 @@ def esconde_palavra_secreta(palavra_secreta, letras_acertada):
 
     print(letras_acertada)
 
+
 def letra_repetida(chute, letras_chute):
     return chute in letras_chute
+
+
+def confirma_letra(palavra_secreta, chute, letras_acertada):
+    index = 0
+    for letra in palavra_secreta:
+        if (chute == letra):
+            letras_acertada[index] = letra.upper()
+        index += 1
+
 
 def linha_aleatoria():
     repetida = True
     qtd_repetidas = 0
-    qtd_linhas = palavras.quantidade_linhas()
+    qtd_linhas = ps.quantidade_linhas()
 
     while(repetida):
-        linha_obtida = palavras.linha_aleatoria(qtd_linhas)
+        linha_obtida = ps.linha_aleatoria(qtd_linhas)
+
         if (qtd_linhas == qtd_repetidas):
             continuar = input("Todas as palavras já foram jogadas. Deseja continuar jogando? (Y/N)").strip().upper()
             if (continuar == "Y"):
                 linhas_utilizadas.clear()
                 qtd_repetidas = 0
+            else:
+                quit()
         elif linha_obtida in linhas_utilizadas:
             repetida = True
             qtd_repetidas += 1
@@ -73,16 +105,6 @@ def linha_aleatoria():
             linhas_utilizadas.append(linha_obtida)
 
     return linha_obtida
-
-def palavra_aleatoria():
-    linha = linha_aleatoria()
-    dica_palavra_secreta(linha)
-    return palavras.ler("palavras.txt", linha).strip("\n").upper()
-    # return palavra_secreta
-
-def dica_palavra_secreta(linha):
-    dica = palavras.ler("dica.txt", linha).strip("\n").upper()
-    print("Dica:", dica)
 
 
 def jogar_novamente():
@@ -95,20 +117,6 @@ def jogar_novamente():
         continuar = False
 
     return continuar
-
-
-def cabecalho():
-    print("*********************************")
-    print("*  Bem vindo no jogo da Forca!  *")
-    print("*********************************")
-
-
-def confirma_letra(palavra_secreta,chute,letras_acertada):
-    index = 0
-    for letra in palavra_secreta:
-        if (chute == letra):
-            letras_acertada[index] = letra.upper()
-        index += 1
 
 
 def resultado(acertou, palavra):
