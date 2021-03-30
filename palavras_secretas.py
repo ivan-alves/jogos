@@ -1,69 +1,63 @@
+# -*- coding: UTF-8 -*-
 import os.path
 import random
 
+class PalavrasSecretas():
 
-def adicionar():
-    palavra = input("Insira uma nova palavra: ")
-    dica = input("Insira uma nova dica: ")
+    def palavras_secretas(self):
+        continuar = True
 
-    with open("palavras.txt", "a") as arquivo_palavra:
-        arquivo_palavra.write(palavra + ";" + dica + "\n")
+        while(continuar):
+            self.criar_arquivo()
+            resposta = input("Deseja continuar (Y/N): ").strip().upper()
 
+            print(resposta)
+            if(resposta == "Y"):
+                continuar = True
+            else:
+                continuar = False
 
-def ler(linha_aleatoria):
-    with open("palavras.txt", "r") as arquivo:
-        palavra = palavra_aleatoria(arquivo, linha_aleatoria)
-    return str(palavra)
+    def adicionar(self):
+        palavra = input("Insira uma nova palavra: ")
+        dica = input("Insira uma nova dica: ")
 
+        with open("palavras.txt", "a") as arquivo_palavra:
+            arquivo_palavra.write(palavra + ";" + dica + "\n")
 
-def quantidade_linhas():
-    qtd = 0
-    with open("palavras.txt", "r") as arquivo:
-        for linhas in arquivo:
-            qtd +=1
-    return qtd
+    def ler(self, linha):
+        with open("palavras.txt", "r") as arquivo:
+            palavra = self.palavra_aleatoria(arquivo, linha)
+        return str(palavra)
 
+    def palavra_aleatoria(self, arquivo, linha_arquivo):
+        index = 0
 
-def palavra_aleatoria(arquivo, quantidade_linhas):
-    index = 0
+        for palavra in arquivo:
+            if(linha_arquivo == index):
+                return palavra
+            index += 1
 
-    for palavra in arquivo:
-        if(quantidade_linhas == index):
-            palavra_secreta = palavra
-            break
-        index +=1
+    def quantidade_linhas(self):
+        qtd = 0
 
-    return palavra_secreta
+        with open("palavras.txt", "r") as arquivo:
+            # return len(arquivo)
+            for linhas in arquivo:
+                qtd += 1
+        return qtd
 
+    def linha_aleatoria(self, qtd):
+        return random.randrange(0, qtd)
 
-def linha_aleatoria(qtd):
-    return random.randrange(0, qtd)
+    def criar_arquivo(self):
+        exite = os.path.exists("palavras.txt")
 
-
-def criar_arquivo():
-    exite = os.path.exists("palavras.txt")
-
-    if (exite):
-        adicionar()
-    else:
-        arquivo = open("palavras.txt", "w")
-        arquivo.close()
-        adicionar()
-
-
-def palavras_secretas():
-    continuar = True
-
-    while(continuar):
-        criar_arquivo()
-        resposta = input("Deseja continuar (Y/N): ").strip().upper()
-
-        print(resposta)
-        if(resposta == "Y"):
-            continuar = True
+        if (exite):
+            self.adicionar()
         else:
-            continuar = False
-
+            arquivo = open("palavras.txt", "w")
+            arquivo.close()
+            self.adicionar()
 
 if(__name__ == "__main__"):
-    palavras_secretas()
+    PalavrasSecretas().palavras_secretas()
